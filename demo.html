@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrikeBoard Demo - Cricket Scoring App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+        }
+        
+        .demo-section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .demo-section h2 {
+            color: #667eea;
+            margin-bottom: 16px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list li::before {
+            content: "✅ ";
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .cta-button {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 16px 24px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 24px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .screenshot {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 8px;
+            margin: 16px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tech-stack {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        
+        .tech-tag {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🏏 StrikeBoard Demo</h1>
+        <p class="subtitle">Mobile-First Cricket Scoring Web App</p>
+        
+        <div class="demo-section">
+            <h2>🎯 What is StrikeBoard?</h2>
+            <p>A complete cricket scoring application built for mobile devices. Perfect for local matches, tournaments, or practice sessions. No internet connection required!</p>
+            
+            <div class="tech-stack">
+                <span class="tech-tag">HTML5</span>
+                <span class="tech-tag">CSS3</span>
+                <span class="tech-tag">Vanilla JavaScript</span>
+                <span class="tech-tag">Mobile-First</span>
+                <span class="tech-tag">Responsive</span>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>✨ Key Features</h2>
+            <ul class="feature-list">
+                <li><strong>Match Setup:</strong> Configure teams and overs per innings</li>
+                <li><strong>Real-time Scoring:</strong> Ball-by-ball scoring with runs, extras, and wickets</li>
+                <li><strong>Mobile Optimized:</strong> Thumb-friendly buttons, no scrolling needed</li>
+                <li><strong>Score History:</strong> Edit or delete any ball with auto-recalculation</li>
+                <li><strong>Automatic Innings:</strong> Seamless switch between innings</li>
+                <li><strong>Match Results:</strong> Automatic win/loss calculation</li>
+                <li><strong>Local Storage:</strong> Save progress automatically</li>
+                <li><strong>No Backend:</strong> Works offline, no server required</li>
+            </ul>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🏏 Cricket Rules Implemented</h2>
+            <ul class="feature-list">
+                <li><strong>Over Management:</strong> 6 legal balls = 1 over</li>
+                <li><strong>Extras Handling:</strong> No balls, wides, byes, leg byes</li>
+                <li><strong>Wicket Tracking:</strong> All dismissal types with notes</li>
+                <li><strong>Run Outs:</strong> Special handling for run outs on extras</li>
+                <li><strong>Target Calculation:</strong> Automatic target and required runs</li>
+                <li><strong>Innings Rules:</strong> 10 wickets or overs limit</li>
+            </ul>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📱 Mobile-First Design</h2>
+            <ul class="feature-list">
+                <li><strong>Responsive Layout:</strong> Adapts to any screen size</li>
+                <li><strong>Touch Optimized:</strong> Large buttons for easy scoring</li>
+                <li><strong>Sticky Header:</strong> Score always visible</li>
+                <li><strong>Compact Interface:</strong> All features in viewport</li>
+                <li><strong>Accessibility:</strong> Focus states and keyboard navigation</li>
+                <li><strong>Modern UI:</strong> Clean, professional appearance</li>
+            </ul>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🚀 Quick Start</h2>
+            <ol>
+                <li>Enter team names (e.g., "India" vs "Australia")</li>
+                <li>Set overs per innings (default: 20)</li>
+                <li>Click "Start Match"</li>
+                <li>Begin scoring ball by ball!</li>
+            </ol>
+            
+            <p><strong>Scoring a ball:</strong> Select runs (0-6), add extras if any, mark wicket if applicable, add notes, and submit!</p>
+        </div>
+        
+        <a href="index.html" class="cta-button">🎮 Try StrikeBoard Now!</a>
+        
+        <div class="demo-section">
+            <h2>📄 Files Included</h2>
+            <ul class="feature-list">
+                <li><code>index.html</code> - Main application</li>
+                <li><code>styles.css</code> - Mobile-first responsive styles</li>
+                <li><code>script.js</code> - Cricket scoring logic</li>
+                <li><code>README.md</code> - Complete documentation</li>
+            </ul>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔧 Technical Highlights</h2>
+            <ul class="feature-list">
+                <li><strong>No Dependencies:</strong> Pure vanilla JavaScript</li>
+                <li><strong>ES6 Classes:</strong> Modern, maintainable code</li>
+                <li><strong>Local Storage:</strong> Automatic data persistence</li>
+                <li><strong>Event-Driven:</strong> Responsive user interactions</li>
+                <li><strong>Cross-Browser:</strong> Works on all modern browsers</li>
+                <li><strong>Offline Ready:</strong> No internet connection needed</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 
