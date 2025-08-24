@@ -522,6 +522,16 @@ body::before {
     background-color: #e9ecef;
 }
 
+.action-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background-color: #f8f9fa;
+}
+
+.action-btn:disabled:hover {
+    background-color: #f8f9fa;
+}
+
 /* Modal Styles */
 .modal {
     position: fixed;

@@ -525,14 +525,19 @@ class CricketScorer {
                 details += ` (${ball.notes})`;
             }
 
+            // Check if we're in second innings and this is a first innings ball
+            const isFirstInningsBall = ball.innings === 1;
+            const isSecondInnings = this.matchData.currentInnings === 2;
+            const canEdit = !(isSecondInnings && isFirstInningsBall);
+            
             historyEntry.innerHTML = `
                 <div class="history-info">
                     <div class="history-over ${teamClass}">${overBall}</div>
                     <div class="history-details">${details}</div>
                 </div>
                 <div class="history-actions">
-                    <button class="action-btn edit" onclick="scorer.editBall(${ball.id})">✏️</button>
-                    <button class="action-btn delete" onclick="scorer.deleteBall(${ball.id})">🗑️</button>
+                    <button class="action-btn edit" onclick="scorer.editBall(${ball.id})" ${!canEdit ? 'disabled' : ''} style="${!canEdit ? 'opacity: 0.3; cursor: not-allowed;' : ''}">✏️</button>
+                    <button class="action-btn delete" onclick="scorer.deleteBall(${ball.id})" ${!canEdit ? 'disabled' : ''} style="${!canEdit ? 'opacity: 0.3; cursor: not-allowed;' : ''}">🗑️</button>
                 </div>
             `;
             
@@ -543,6 +548,12 @@ class CricketScorer {
     editBall(ballId) {
         const ball = this.matchData.ballHistory.find(b => b.id === ballId);
         if (!ball) return;
+
+        // Prevent editing first innings balls during second innings
+        if (this.matchData.currentInnings === 2 && ball.innings === 1) {
+            alert('Cannot edit first innings balls once second innings has started.');
+            return;
+        }
 
         // Remove the ball and recalculate
         this.deleteBall(ballId, false);
@@ -567,6 +578,12 @@ class CricketScorer {
         if (ballIndex === -1) return;
 
         const ball = this.matchData.ballHistory[ballIndex];
+        
+        // Prevent deleting first innings balls during second innings
+        if (this.matchData.currentInnings === 2 && ball.innings === 1) {
+            alert('Cannot delete first innings balls once second innings has started.');
+            return;
+        }
         
         // Remove from history
         this.matchData.ballHistory.splice(ballIndex, 1);
