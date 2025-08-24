@@ -334,9 +334,87 @@ class CricketScorer {
             resultMessage = "Both teams scored the same number of runs";
         }
 
+        // Create complete scoreboard
+        const scoreboardHTML = this.createCompleteScoreboard();
+
         document.getElementById('resultTitle').textContent = resultTitle;
         document.getElementById('resultMessage').textContent = resultMessage;
+        
+        // Add scoreboard to modal
+        const modalContent = document.querySelector('.modal-content');
+        const existingScoreboard = modalContent.querySelector('.complete-scoreboard');
+        if (existingScoreboard) {
+            existingScoreboard.remove();
+        }
+        
+        const scoreboardDiv = document.createElement('div');
+        scoreboardDiv.className = 'complete-scoreboard';
+        scoreboardDiv.innerHTML = scoreboardHTML;
+        modalContent.appendChild(scoreboardDiv);
+        
         document.getElementById('resultModal').classList.remove('hidden');
+    }
+
+    createCompleteScoreboard() {
+        const teamAScore = this.matchData.firstInningsScore;
+        const teamBScore = this.matchData.currentInnings === 2 ? this.matchData.currentScore : 0;
+        const teamAWickets = this.matchData.firstInningsWickets;
+        const teamBWickets = this.matchData.currentInnings === 2 ? this.matchData.currentWickets : 0;
+        const teamAOvers = this.calculateInningsOvers(1);
+        const teamBOvers = this.calculateInningsOvers(2);
+
+        return `
+            <div class="scoreboard-container">
+                <h3>Complete Scoreboard</h3>
+                <div class="innings-scores">
+                    <div class="innings-score team-a">
+                        <h4>${this.matchData.teamA}</h4>
+                        <div class="score-details">
+                            <span class="runs">${teamAScore}</span>
+                            <span class="separator">/</span>
+                            <span class="wickets">${teamAWickets}</span>
+                            <span class="overs">(${teamAOvers} overs)</span>
+                        </div>
+                    </div>
+                    <div class="innings-score team-b">
+                        <h4>${this.matchData.teamB}</h4>
+                        <div class="score-details">
+                            <span class="runs">${teamBScore}</span>
+                            <span class="separator">/</span>
+                            <span class="wickets">${teamBWickets}</span>
+                            <span class="overs">(${teamBOvers} overs)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="match-summary">
+                    <div class="summary-item">
+                        <span class="label">Match Format:</span>
+                        <span class="value">${this.matchData.oversPerInnings} overs per innings</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Total Balls:</span>
+                        <span class="value">${this.matchData.ballHistory.length}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    calculateInningsOvers(innings) {
+        const inningsBalls = this.matchData.ballHistory.filter(ball => ball.innings === innings);
+        let legalBalls = 0;
+        
+        inningsBalls.forEach(ball => {
+            if (ball.extraType === 'noBall' || ball.extraType === 'wide') {
+                // Extras don't count toward overs
+                return;
+            }
+            legalBalls++;
+        });
+        
+        const overs = Math.floor(legalBalls / 6);
+        const balls = legalBalls % 6;
+        return balls === 0 ? overs : `${overs}.${balls}`;
     }
 
     updateDisplay() {
