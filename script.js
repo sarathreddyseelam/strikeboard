@@ -414,8 +414,16 @@ class CricketScorer {
 
             if (ball.isWicket && ball.extraType !== 'none') {
                 // Wicket on extra (e.g., run out on no ball or wide)
-                ballText = ball.extraType === 'noBall' ? 'W/NB' : 
-                          ball.extraType === 'wide' ? 'W/WD' : 'W';
+                const runs = ball.runs || 0;
+                if (runs > 0) {
+                    // Runs + Extra + Wicket (e.g., 1 run on no ball with wicket)
+                    ballText = ball.extraType === 'noBall' ? `${runs}NB/W` : 
+                              ball.extraType === 'wide' ? `${runs}WD/W` : 'W';
+                } else {
+                    // Just Extra + Wicket (e.g., run out on no ball)
+                    ballText = ball.extraType === 'noBall' ? 'W/NB' : 
+                              ball.extraType === 'wide' ? 'W/WD' : 'W';
+                }
                 ballClass = 'wicket';
             } else if (ball.isWicket) {
                 ballText = 'W';
