@@ -412,12 +412,23 @@ class CricketScorer {
             let ballText;
             let ballClass;
 
-            if (ball.isWicket) {
+            if (ball.isWicket && ball.extraType !== 'none') {
+                // Wicket on extra (e.g., run out on no ball or wide)
+                ballText = ball.extraType === 'noBall' ? 'W/NB' : 
+                          ball.extraType === 'wide' ? 'W/WD' : 'W';
+                ballClass = 'wicket';
+            } else if (ball.isWicket) {
                 ballText = 'W';
                 ballClass = 'wicket';
             } else if (ball.extraType !== 'none') {
-                ballText = ball.extraType === 'noBall' ? 'NB' : 
-                          ball.extraType === 'wide' ? 'WD' : '';
+                const runs = ball.runs || 0;
+                if (runs > 0) {
+                    ballText = ball.extraType === 'noBall' ? `${runs}NB` : 
+                              ball.extraType === 'wide' ? `${runs}WD` : '';
+                } else {
+                    ballText = ball.extraType === 'noBall' ? 'NB' : 
+                              ball.extraType === 'wide' ? 'WD' : '';
+                }
                 ballClass = 'extra';
             } else {
                 ballText = ball.runs.toString();
