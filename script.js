@@ -65,6 +65,24 @@ class CricketScorer {
         document.getElementById('newMatchBtn').addEventListener('click', () => {
             this.resetMatch();
         });
+
+        // Event delegation for history action buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('action-btn')) {
+                const ballId = parseInt(e.target.dataset.ballId);
+                const canEdit = e.target.dataset.canEdit === 'true';
+                
+                if (!canEdit || e.target.disabled) {
+                    return;
+                }
+                
+                if (e.target.classList.contains('edit')) {
+                    this.editBall(ballId);
+                } else if (e.target.classList.contains('delete')) {
+                    this.deleteBall(ballId);
+                }
+            }
+        });
         
         console.log('Event listeners initialized');
     }
@@ -95,6 +113,8 @@ class CricketScorer {
         const teamA = document.getElementById('teamA').value.trim();
         const teamB = document.getElementById('teamB').value.trim();
         const overs = parseInt(document.getElementById('overs').value);
+        const wideExtra = parseInt(document.getElementById('wideExtra').value);
+        const noBallExtra = parseInt(document.getElementById('noBallExtra').value);
 
         if (!teamA || !teamB) {
             alert('Please enter both team names');
@@ -109,6 +129,8 @@ class CricketScorer {
             teamA: teamA,
             teamB: teamB,
             oversPerInnings: overs,
+            wideExtra: wideExtra,
+            noBallExtra: noBallExtra,
             currentInnings: 1,
             firstInningsScore: 0,
             firstInningsWickets: 0,
@@ -200,9 +222,12 @@ class CricketScorer {
         if (ballEntry.extraType !== 'none') {
             switch (ballEntry.extraType) {
                 case 'noBall':
+                    runsToAdd += this.matchData.noBallExtra; // Use configured extra runs
+                    ballsToAdd = 0; // Ball never counts for no ball
+                    break;
                 case 'wide':
-                    runsToAdd += 1; // Extra run
-                    ballsToAdd = 0; // Ball never counts for no ball/wide
+                    runsToAdd += this.matchData.wideExtra; // Use configured extra runs
+                    ballsToAdd = 0; // Ball never counts for wide
                     break;
             }
         }
@@ -536,8 +561,8 @@ class CricketScorer {
                     <div class="history-details">${details}</div>
                 </div>
                 <div class="history-actions">
-                    <button class="action-btn edit" onclick="scorer.editBall(${ball.id})" ${!canEdit ? 'disabled' : ''} style="${!canEdit ? 'opacity: 0.3; cursor: not-allowed;' : ''}">✏️</button>
-                    <button class="action-btn delete" onclick="scorer.deleteBall(${ball.id})" ${!canEdit ? 'disabled' : ''} style="${!canEdit ? 'opacity: 0.3; cursor: not-allowed;' : ''}">🗑️</button>
+                    <button class="action-btn edit" data-ball-id="${ball.id}" data-can-edit="${canEdit}" ${!canEdit ? 'disabled' : ''} style="${!canEdit ? 'opacity: 0.3; cursor: not-allowed;' : ''}">✏️</button>
+                    <button class="action-btn delete" data-ball-id="${ball.id}" data-can-edit="${canEdit}" ${!canEdit ? 'disabled' : ''} style="${!canEdit ? 'opacity: 0.3; cursor: not-allowed;' : ''}">🗑️</button>
                 </div>
             `;
             
@@ -552,6 +577,12 @@ class CricketScorer {
         // Prevent editing first innings balls during second innings
         if (this.matchData.currentInnings === 2 && ball.innings === 1) {
             alert('Cannot edit first innings balls once second innings has started.');
+            return;
+        }
+
+        // Additional safety check - prevent if button is disabled
+        const editButton = event?.target;
+        if (editButton && editButton.disabled) {
             return;
         }
 
@@ -584,6 +615,12 @@ class CricketScorer {
             alert('Cannot delete first innings balls once second innings has started.');
             return;
         }
+
+        // Additional safety check - prevent if button is disabled
+        const deleteButton = event?.target;
+        if (deleteButton && deleteButton.disabled) {
+            return;
+        }
         
         // Remove from history
         this.matchData.ballHistory.splice(ballIndex, 1);
@@ -604,34 +641,71 @@ class CricketScorer {
         this.matchData.currentOver = 0;
         this.matchData.currentBall = 0;
 
-        // Recalculate from history
-        this.matchData.ballHistory.forEach(ball => {
-            let runsToAdd = ball.runs;
-            let ballsToAdd = 1;
-            let wicketsToAdd = 0;
-
-            if (ball.extraType !== 'none') {
-                switch (ball.extraType) {
-                    case 'noBall':
-                    case 'wide':
-                        runsToAdd += 1;
-                        ballsToAdd = 0; // Ball never counts for no ball/wide
-                        break;
-                }
-            }
-
-            if (ball.isWicket) {
-                wicketsToAdd = 1;
-            }
-
-            this.matchData.currentScore += runsToAdd;
-            this.matchData.currentWickets += wicketsToAdd;
+        // Recalculate first innings data if we're in second innings
+        if (this.matchData.currentInnings === 2) {
+            this.matchData.firstInningsScore = 0;
+            this.matchData.firstInningsWickets = 0;
             
-            if (ballsToAdd > 0) {
-                this.matchData.currentBall += ballsToAdd;
-                if (this.matchData.currentBall >= 6) {
-                    this.matchData.currentOver += Math.floor(this.matchData.currentBall / 6);
-                    this.matchData.currentBall = this.matchData.currentBall % 6;
+            // Calculate first innings from history
+            this.matchData.ballHistory.forEach(ball => {
+                if (ball.innings === 1) {
+                    let runsToAdd = ball.runs || 0;
+                    let wicketsToAdd = 0;
+
+                    if (ball.extraType !== 'none') {
+                        switch (ball.extraType) {
+                            case 'noBall':
+                                runsToAdd += this.matchData.noBallExtra;
+                                break;
+                            case 'wide':
+                                runsToAdd += this.matchData.wideExtra;
+                                break;
+                        }
+                    }
+
+                    if (ball.isWicket) {
+                        wicketsToAdd = 1;
+                    }
+
+                    this.matchData.firstInningsScore += runsToAdd;
+                    this.matchData.firstInningsWickets += wicketsToAdd;
+                }
+            });
+        }
+
+        // Recalculate current innings from history
+        this.matchData.ballHistory.forEach(ball => {
+            if (ball.innings === this.matchData.currentInnings) {
+                let runsToAdd = ball.runs || 0;
+                let ballsToAdd = 1;
+                let wicketsToAdd = 0;
+
+                if (ball.extraType !== 'none') {
+                    switch (ball.extraType) {
+                        case 'noBall':
+                            runsToAdd += this.matchData.noBallExtra;
+                            ballsToAdd = 0; // Ball never counts for no ball
+                            break;
+                        case 'wide':
+                            runsToAdd += this.matchData.wideExtra;
+                            ballsToAdd = 0; // Ball never counts for wide
+                            break;
+                    }
+                }
+
+                if (ball.isWicket) {
+                    wicketsToAdd = 1;
+                }
+
+                this.matchData.currentScore += runsToAdd;
+                this.matchData.currentWickets += wicketsToAdd;
+                
+                if (ballsToAdd > 0) {
+                    this.matchData.currentBall += ballsToAdd;
+                    if (this.matchData.currentBall >= 6) {
+                        this.matchData.currentOver += Math.floor(this.matchData.currentBall / 6);
+                        this.matchData.currentBall = this.matchData.currentBall % 6;
+                    }
                 }
             }
         });
@@ -642,6 +716,8 @@ class CricketScorer {
             teamA: '',
             teamB: '',
             oversPerInnings: 20,
+            wideExtra: 1,
+            noBallExtra: 1,
             currentInnings: 1,
             firstInningsScore: 0,
             firstInningsWickets: 0,
